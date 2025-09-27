@@ -63,29 +63,18 @@ def plot_model(method="jenks", n_bins=3):
     
     # ------- 图 1：Voronoi 地图 -------
     fig1, ax1 = plt.subplots(figsize=(8,8))
-    for point_idx, region_idx in enumerate(vor.point_region):
-        vertices = vor.regions[region_idx]
-        if -1 in vertices or len(vertices) == 0:
-            continue  # 忽略无界区域
-        polygon = Polygon(vor.vertices[vertices])
-        if polygon.is_valid:
-            lvl = cities.loc[point_idx, "level"]
-            ax1.fill(*polygon.exterior.xy,
-                     color=color_map[lvl % len(color_map)],
-                     alpha=0.4, edgecolor="black")
-    
-    for _, row in cities.iterrows():
-        ax1.scatter(row["x"], row["y"],
-                    s=row["pop"]*0.0005,
-                    c=color_map[row["level"] % len(color_map)],
-                    edgecolor="k", alpha=0.8, zorder=3)
-        ax1.text(row["x"]+0.8, row["y"]+0.8,
-                 f"Pop:{row['pop']}",
-                 fontsize=7, color=color_map[row["level"] % len(color_map)])
+    voronoi_plot_2d(vor, ax=ax1, show_vertices=False, show_points=False)
+
+    colors = ["green", "blue", "red", "orange", "purple", "brown"]
+    for i, row in cities.iterrows():
+        ax1.scatter(row["x"], row["y"], s=row["pop"]*0.0005, 
+                    c=colors[row["level"] % len(colors)], alpha=0.6)
+        ax1.text(row["x"]+0.8, row["y"]+0.8, f"Pop:{row['pop']}", fontsize=7)
 
     ax1.set_title(f"Central Place Simulation ({method}, {n_bins} bins)")
     ax1.set_xlabel("X coordinate")
     ax1.set_ylabel("Y coordinate")
+
 
     # ------- 计算 Voronoi 区域面积 -------
     regions = {}
