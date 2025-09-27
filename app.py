@@ -70,20 +70,18 @@ def plot_model(method="jenks", n_bins=3):
         polygon = Polygon(vor.vertices[vertices])
         if polygon.is_valid:
             lvl = cities.loc[point_idx, "level"]
-            ax.fill(*polygon.exterior.xy, 
-                    color=color_map[lvl % len(color_map)], 
-                    alpha=0.4, 
-                    edgecolor="black")
+            ax1.fill(*polygon.exterior.xy,
+                     color=color_map[lvl % len(color_map)],
+                     alpha=0.4, edgecolor="black")
     
     for _, row in cities.iterrows():
-        ax.scatter(row["x"], row["y"],
-                   s=row["pop"]*0.0005,
-                   c=color_map[row["level"] % len(color_map)],
-                   edgecolor="k", alpha=0.8, zorder=3)
-        ax.text(row["x"]+0.8, row["y"]+0.8,
-                f"Pop:{row['pop']}",
-                fontsize=7, color=color_map[row["level"] % len(color_map)])
-
+        ax1.scatter(row["x"], row["y"],
+                    s=row["pop"]*0.0005,
+                    c=color_map[row["level"] % len(color_map)],
+                    edgecolor="k", alpha=0.8, zorder=3)
+        ax1.text(row["x"]+0.8, row["y"]+0.8,
+                 f"Pop:{row['pop']}",
+                 fontsize=7, color=color_map[row["level"] % len(color_map)])
 
     ax1.set_title(f"Central Place Simulation ({method}, {n_bins} bins)")
     ax1.set_xlabel("X coordinate")
