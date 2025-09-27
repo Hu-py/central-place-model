@@ -47,6 +47,7 @@ def classify_levels(data, method="quantile", n_bins=3):
         raise ValueError("Unknown method, choose quantile/uniform/jenks")
     return levels
 
+
 # ==============================
 # 3. 绘图函数
 # ==============================
@@ -58,13 +59,10 @@ def plot_model(method="jenks", n_bins=3):
     points = cities[["x", "y"]].values
     vor = Voronoi(points)
 
-    fig, ax = plt.subplots(figsize=(8, 8))
-
-    # 定义颜色映射
     color_map = {0:"green", 1:"blue", 2:"red", 3:"orange", 4:"purple"}
-    labels = {0:"小城镇", 1:"中城市", 2:"大城市", 3:"超大城市", 4:"特大城市"}
-
-    # 绘制 Voronoi 多边形并填充颜色
+    
+    # ------- 图 1：Voronoi 地图 -------
+    fig1, ax1 = plt.subplots(figsize=(8,8))
     for point_idx, region_idx in enumerate(vor.point_region):
         vertices = vor.regions[region_idx]
         if -1 in vertices or len(vertices) == 0:
@@ -76,22 +74,61 @@ def plot_model(method="jenks", n_bins=3):
                     color=color_map[lvl % len(color_map)], 
                     alpha=0.4, 
                     edgecolor="black")
-
-    # 绘制城市点
+    
     for _, row in cities.iterrows():
-        ax.scatter(row["x"], row["y"], 
-                   s=row["pop"]*0.0005, 
-                   c=color_map[row["level"] % len(color_map)], 
-                   edgecolor="k", alpha=0.8)
-        ax.text(row["x"]+0.8, row["y"]+0.8, 
-                f"{labels[row['level']]}\nPop:{row['pop']}",
-                fontsize=8, color=color_map[row["level"] % len(color_map)])
+        ax.scatter(row["x"], row["y"],
+                   s=row["pop"]*0.0005,
+                   c=color_map[row["level"] % len(color_map)],
+                   edgecolor="k", alpha=0.8, zorder=3)
+        ax.text(row["x"]+0.8, row["y"]+0.8,
+                f"Pop:{row['pop']}",
+                fontsize=7, color=color_map[row["level"] % len(color_map)])
 
-    ax.set_title(f"Central Place Simulation ({method}, {n_bins} bins)")
-    ax.set_xlabel("X coordinate")
-    ax.set_ylabel("Y coordinate")
 
-    return fig
+    ax1.set_title(f"Central Place Simulation ({method}, {n_bins} bins)")
+    ax1.set_xlabel("X coordinate")
+    ax1.set_ylabel("Y coordinate")
+
+    # ------- 计算 Voronoi 区域面积 -------
+    regions = {}
+    for point_idx, region_idx in enumerate(vor.point_region):
+        vertices = vor.regions[region_idx]
+        if -1 in vertices or len(vertices) == 0:
+            continue
+        polygon = Polygon(vor.vertices[vertices])
+        if polygon.is_valid:
+            regions[point_idx] = polygon.area
+
+    cities["area"] = cities.index.map(regions).fillna(np.nan)
+
+    stats = cities.groupby("level").agg(
+        Avg_Pop=("pop", "mean"),
+        Avg_Area=("area", "mean"),
+        City_Count=("pop", "count")
+    )
+
+    # ------- 图 2：Rank-Size 拟合 -------
+    cities_sorted = cities.sort_values("pop", ascending=False).reset_index(drop=True)
+    cities_sorted["rank"] = np.arange(1, len(cities_sorted)+1)
+
+    def rank_size(r, P1, q):
+        return P1 / (r**q)
+
+    popt, _ = curve_fit(rank_size, cities_sorted["rank"], cities_sorted["pop"], 
+                        p0=[cities_sorted["pop"].iloc[0], 1])
+
+    fig2, ax2 = plt.subplots(figsize=(8,6))
+    ax2.scatter(cities_sorted["rank"], cities_sorted["pop"], label="Data")
+    ax2.plot(cities_sorted["rank"], rank_size(cities_sorted["rank"], *popt), 
+             'r--', label=f"Fit: q={popt[1]:.2f}")
+    ax2.set_xscale("log")
+    ax2.set_yscale("log")
+    ax2.set_xlabel("Rank")
+    ax2.set_ylabel("Population")
+    ax2.set_title("Rank-Size Rule")
+    ax2.legend()
+
+    return fig1, fig2, stats
 
 
 # ==============================
