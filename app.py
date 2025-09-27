@@ -82,8 +82,14 @@ def plot_model(method="jenks", n_bins=3):
     for lvl in unique_levels:
         ax1.scatter([], [], color=color_map[lvl % len(color_map)], 
                     alpha=0.6, label=labels.get(lvl, f"Level {lvl}"))
-    
-    ax1.legend(title="City Level", loc="upper right")
+
+    ax1.legend(
+        title="City Level",
+        loc="upper left", 
+        bbox_to_anchor=(1.02, 1), 
+        borderaxespad=0
+    )
+    #ax1.legend(title="City Level", loc="upper right")
 
     # ------- 计算 Voronoi 区域面积 -------
     regions = {}
@@ -133,7 +139,7 @@ def plot_model(method="jenks", n_bins=3):
 st.title("Central Place Theory Simulation")
 
 method = st.sidebar.selectbox("Classification Method", ["quantile", "uniform", "jenks"])
-n_bins = st.sidebar.slider("Number of Bins", 2, 6, 3)
+n_bins = st.sidebar.slider("Number of Bins", 2, 5, 3)
 
 fig1, fig2, stats = plot_model(method, n_bins)
 
