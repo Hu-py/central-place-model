@@ -123,11 +123,20 @@ n_bins = st.sidebar.slider("Number of Bins", 2, 6, 3)
 
 fig1, fig2, stats = plot_model(method, n_bins)
 
-st.pyplot(fig1)
-st.subheader("Level Statistics")
-st.dataframe(stats)
+# ==============================
+# 两栏布局
+# ==============================
+col1, col2 = st.columns([2, 1])  # 左边宽一些，右边窄一些
 
-st.pyplot(fig2)
+with col1:
+    st.pyplot(fig1)
+
+with col2:
+    st.subheader("Level Statistics")
+    st.dataframe(stats)
+
+    st.subheader("Rank-Size Fit")
+    st.pyplot(fig2)
 
 # ==============================
 # 固定右下角标注
