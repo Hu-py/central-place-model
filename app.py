@@ -149,7 +149,13 @@ fig1, fig2, stats = plot_model(method, n_bins)
 
 st.pyplot(fig1)
 st.subheader("Level Statistics")
-st.dataframe(stats)
+styled_stats = stats.style.set_properties(**{'text-align': 'center'})
+styled_stats = styled_stats.set_table_styles(
+    [dict(selector='th', props=[('text-align', 'center')])]  # 列名也居中
+)
+
+st.table(styled_stats)
+#st.dataframe(stats)
 
 st.pyplot(fig2)
 
