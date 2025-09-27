@@ -71,9 +71,19 @@ def plot_model(method="jenks", n_bins=3):
         ax1.text(row["x"]+0.8, row["y"]+0.8, f"Pop:{row['pop']}", fontsize=7)
 
     ax1.set_title(f"Central Place Simulation ({method}, {n_bins} bins)")
-    ax1.set_xlabel("X coordinate")
-    ax1.set_ylabel("Y coordinate")
+    #ax1.set_xlabel("X coordinate")
+    #ax1.set_ylabel("Y coordinate")
 
+    # ------- 动态图例 -------
+    unique_levels = sorted(cities["level"].unique())  # 当前实际出现的层级
+    labels = {0: "Small Town", 1: "Medium City", 2: "Large City",
+              3: "Regional Hub", 4: "Metropolis"}
+    
+    for lvl in unique_levels:
+        ax1.scatter([], [], color=color_map[lvl % len(color_map)], 
+                    alpha=0.6, label=labels.get(lvl, f"Level {lvl}"))
+    
+    ax1.legend(title="City Level", loc="upper right")
 
     # ------- 计算 Voronoi 区域面积 -------
     regions = {}
