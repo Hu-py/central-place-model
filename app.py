@@ -39,11 +39,11 @@ def classify_levels(data, method="quantile", n_bins=3):
         discretizer = KBinsDiscretizer(n_bins=n_bins, encode="ordinal", strategy="uniform")
         levels = discretizer.fit_transform(data[["pop"]]).astype(int).ravel()
     elif method == "jenks":
-        jnb = JenksNaturalBreaks(nb_class=n_bins)
+        jnb = JenksNaturalBreaks(n_classes=n_bins)  # ⚠️ 修复
         jnb.fit(data["pop"].values)
         levels = jnb.labels_
     else:
-        raise ValueError("未知分层方法，请选择 quantile/uniform/jenks")
+        raise ValueError("Unknown method, choose quantile/uniform/jenks")
     return levels
 
 # ==============================
