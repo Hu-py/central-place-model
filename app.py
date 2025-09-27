@@ -126,17 +126,18 @@ fig1, fig2, stats = plot_model(method, n_bins)
 # ==============================
 # 两栏布局
 # ==============================
-col1, col2 = st.columns([2, 1])  # 左边宽一些，右边窄一些
+
+col1, col2 = st.columns([3, 2])  # 左 3 / 右 2，右边更宽
 
 with col1:
-    st.pyplot(fig1)
+    st.pyplot(fig1, use_container_width=True)  # 地图放左边
 
 with col2:
     st.subheader("Level Statistics")
-    st.dataframe(stats)
+    st.dataframe(stats, use_container_width=True)  # 表格占满右栏
 
     st.subheader("Rank-Size Fit")
-    st.pyplot(fig2)
+    st.pyplot(fig2, use_container_width=True)  # Rank-Size 图自适应
 
 # ==============================
 # 固定右下角标注
