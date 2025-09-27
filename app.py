@@ -61,9 +61,10 @@ def plot_model(method="jenks", n_bins=3):
     voronoi_plot_2d(vor, ax=ax1, show_vertices=False, show_points=False)
 
     colors = ["green", "blue", "red", "orange", "purple", "brown"]
+    
     for i, row in cities.iterrows():
         ax1.scatter(row["x"], row["y"], s=row["pop"]*0.0005, 
-                    c=colors[row["level"] % len(colors)], alpha=0.6)
+                    c=colors[int(row["level"]) % len(colors)], alpha=0.6)
         ax1.text(row["x"]+0.8, row["y"]+0.8, f"Pop:{row['pop']}", fontsize=7)
 
     ax1.set_title(f"Central Place Simulation ({method}, {n_bins} bins)")
