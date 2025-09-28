@@ -18,17 +18,16 @@ from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 # ==============================
-# 1. 随机生成聚落数据
+# 生成聚落数据（加seed参数）
 # ==============================
-np.random.seed(42)
-N = 50  # 城市/聚落数量
-
-x = np.random.uniform(0, 100, N)
-y = np.random.uniform(0, 100, N)
-population = np.random.lognormal(mean=10, sigma=0.5, size=N).astype(int)
-
-cities = pd.DataFrame({"x": x, "y": y, "pop": population})
-
+def generate_cities(seed=None, N=50):
+    if seed is not None:
+        np.random.seed(seed)
+    x = np.random.uniform(0, 100, N)
+    y = np.random.uniform(0, 100, N)
+    population = np.random.lognormal(mean=10, sigma=0.5, size=N).astype(int)
+    return pd.DataFrame({"x": x, "y": y, "pop": population})
+    
 # ==============================
 # 2. 自动分层函数
 # ==============================
@@ -137,6 +136,20 @@ def plot_model(method="jenks", n_bins=3):
 # 4. Streamlit 界面
 # ==============================
 st.title("Central Place Theory Simulation")
+
+N = st.sidebar.slider("Number of settlements", 20, 200, 50, 5)
+
+if "seed" not in st.session_state:
+    st.session_state.seed = 42  # 初始种子
+
+if st.button("City Initialization"):
+    st.session_state.seed = np.random.randint(0, 1000000)
+
+# Generate cities based on current seed
+cities = generate_cities(seed=st.session_state.seed, N=N)
+
+st.write(f"Current Seed: `{st.session_state.seed}`")
+st.dataframe(cities.head())
 
 method = st.sidebar.selectbox("Classification Method", ["quantile", "uniform", "jenks"])
 n_bins = st.sidebar.slider("Number of Bins", 2, 5, 3)
