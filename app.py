@@ -143,12 +143,12 @@ st.sidebar.header("Controls")
 if "seed" not in st.session_state:
     st.session_state.seed = 42
 
-if st.sidebar.button("City Initialization"):
+if st.sidebar.button("🔄 City Initialization"):
     st.session_state.seed = np.random.randint(0, 1000000)
 
 # 参数选择
 method = st.sidebar.selectbox("Classification Method", ["quantile", "uniform", "jenks"])
-n_bins = st.sidebar.slider("Number of Levels (bins)", 2, 6, 3)
+n_bins = st.sidebar.slider("Number of Levels (bins)", 2, 5, 3)
 
 # 当前城市
 cities = generate_cities(seed=st.session_state.seed, N=50)
