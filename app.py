@@ -144,7 +144,7 @@ if "seed" not in st.session_state:
     st.session_state.seed = 42
 
 if st.sidebar.button("🔄 City Initialization"):
-    st.session_state.seed = np.random.randint(0, 1000000)
+    st.session_state.seed = np.random.randint(0, 10000)
 
 # 参数选择
 method = st.sidebar.selectbox("Classification Method", ["quantile", "uniform", "jenks"])
