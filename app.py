@@ -135,24 +135,24 @@ def plot_model(method="jenks", n_bins=3):
 # ==============================
 # 4. Streamlit 界面
 # ==============================
-st.title("Central Place Theory Simulation")
+st.title("Central Place Model Simulation")
 
-N = st.sidebar.slider("Number of settlements", 20, 200, 50, 5)
+st.sidebar.header("Controls")
 
+# 初始化种子
 if "seed" not in st.session_state:
-    st.session_state.seed = 42  # 初始种子
+    st.session_state.seed = 42
 
-if st.button("City Initialization"):
+if st.sidebar.button("City Initialization"):
     st.session_state.seed = np.random.randint(0, 1000000)
 
-# Generate cities based on current seed
-cities = generate_cities(seed=st.session_state.seed, N=N)
-
-st.write(f"Current Seed: `{st.session_state.seed}`")
-st.dataframe(cities.head())
-
+# 参数选择
 method = st.sidebar.selectbox("Classification Method", ["quantile", "uniform", "jenks"])
-n_bins = st.sidebar.slider("Number of Bins", 2, 5, 3)
+n_bins = st.sidebar.slider("Number of Levels (bins)", 2, 6, 3)
+
+# 当前城市
+cities = generate_cities(seed=st.session_state.seed, N=50)
+st.sidebar.markdown(f"**Current Seed:** `{st.session_state.seed}`")
 
 fig1, fig2, stats = plot_model(method, n_bins)
 
